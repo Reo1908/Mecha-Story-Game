@@ -120,16 +120,10 @@ git push
 
 ---
 
-# ❤️ Special Thanks
-
-Thanks to everyone supporting the development of **Mecha Story Game**.
-
----
 
 <div align="center">
 
 ### ⭐ If you like this project, consider giving it a star!
 
-Made with ❤️ using Unity
 
 </div>
