@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Unity .gitignore Template
 # Source: https://github.com/github/gitignore/blob/main/Unity.gitignore
 # Last synced: 2025-12-18
@@ -150,91 +151,32 @@ obj/x86/
 [Aa][Rr][Mm]64/
 [Aa][Rr][Mm]64[Ee][Cc]/
 bld/
+=======
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+>>>>>>> 1cc68708181207972861886b40033df968a9aae2
 [Oo]bj/
-[Oo]ut/
-[Ll]og/
+[Bb]uild/
+[Bb]uilds/
 [Ll]ogs/
+UserSettings/
+MemoryCaptures/
+Recordings/
 
-# Build results on 'Bin' directories
-**/[Bb]in/*
-# Uncomment if you have tasks that rely on *.refresh files to move binaries
-# (https://github.com/github/gitignore/pull/3736)
-#!**/[Bb]in/*.refresh
-
-# Visual Studio 2015/2017 cache/options directory
+# Visual Studio / Rider
 .vs/
-# Uncomment if you have tasks that create the project's static files in wwwroot
-#wwwroot/
+.vscode/
+.idea/
 
-# Visual Studio 2017 auto generated files
-Generated\ Files/
-
-# MSTest test Results
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
-*.trx
-
-# NUnit
-*.VisualState.xml
-TestResult.xml
-nunit-*.xml
-
-# Approval Tests result files
-*.received.*
-
-# Build Results of an ATL Project
-[Dd]ebugPS/
-[Rr]eleasePS/
-dlldata.c
-
-# Benchmark Results
-BenchmarkDotNet.Artifacts/
-
-# .NET Core
-project.lock.json
-project.fragment.lock.json
-artifacts/
-.artifacts/
-
-# ASP.NET Scaffolding
-ScaffoldingReadMe.txt
-
-# StyleCop
-StyleCopReport.xml
-
-# Files built by Visual Studio
-*_i.c
-*_p.c
-*_h.h
-*.ilk
-*.meta
-*.obj
-*.idb
-*.iobj
-*.pch
-*.pdb
-*.ipdb
-*.pgc
-*.pgd
-*.rsp
-# but not Directory.Build.rsp, as it configures directory-level build defaults
-!Directory.Build.rsp
-*.sbr
-*.tlb
-*.tli
-*.tlh
-*.tmp
-*.tmp_proj
-*_wpftmp.csproj
-*.log
-*.tlog
-*.vspscc
-*.vssscc
-.builds
+# Solution / project files
+*.csproj
+*.sln
+*.user
 *.pidb
-*.svclog
-*.scc
+*.booproj
 
+<<<<<<< HEAD
 # Chutzpah Test files
 _Chutzpah*
 
@@ -536,3 +478,8 @@ FodyWeavers.xsd
 *.msm
 *.msp
 >>>>>>> 4bba42fef6128f4033bb3948a3b15a37daa432b2
+=======
+# OS files
+.DS_Store
+Thumbs.db
+>>>>>>> 1cc68708181207972861886b40033df968a9aae2
