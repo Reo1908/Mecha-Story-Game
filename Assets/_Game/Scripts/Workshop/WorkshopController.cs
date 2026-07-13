@@ -38,8 +38,8 @@ namespace MechaGame
         Text _statsText;
         Text _statusText;
 
-        static readonly Color ButtonColor = new Color(0.14f, 0.16f, 0.2f, 0.9f);
-        static readonly Color ButtonSelectedColor = new Color(0.25f, 0.4f, 0.65f, 0.95f);
+        static readonly Color ButtonColor = UiTheme.Button;
+        static readonly Color ButtonSelectedColor = UiTheme.ButtonSelected;
 
         public void Init(MechaAssembler preview)
         {
@@ -71,74 +71,81 @@ namespace MechaGame
             canvas.transform.SetParent(transform, false);
             UiFactory.EnsureEventSystem();
 
-            UiFactory.CreateText(canvas.transform, "Title", "WERKSTATT", 44,
-                new Vector2(0.5f, 1f), new Vector2(0f, -50f), new Vector2(600f, 60f),
-                Color.white, TextAnchor.MiddleCenter);
+            // Kopfleiste: Titel links, Tabs daneben.
+            Image header = UiFactory.CreatePanel(canvas.transform, "Header",
+                new Vector2(0.5f, 1f), new Vector2(0f, -46f), new Vector2(1860f, 76f), UiTheme.Panel);
+            UiFactory.CreateText(header.transform, "Title", "WERKSTATT", 34,
+                new Vector2(0f, 0.5f), new Vector2(160f, 0f), new Vector2(300f, 50f),
+                UiTheme.Text, TextAnchor.MiddleLeft, FontStyle.Bold);
 
-            // Tabs oben links.
-            Button partsTab = UiFactory.CreateButton(canvas.transform, "Tab_Parts", "Bauteile",
-                new Vector2(0f, 1f), new Vector2(120f, -60f), new Vector2(180f, 52f),
-                () => SelectTab(Tab.Parts), 22);
+            Button partsTab = UiFactory.CreateButton(header.transform, "Tab_Parts", "Bauteile",
+                new Vector2(0f, 0.5f), new Vector2(430f, 0f), new Vector2(170f, 50f),
+                () => SelectTab(Tab.Parts), 21);
             _tabButtonImages[Tab.Parts] = partsTab.GetComponent<Image>();
-            Button weaponsTab = UiFactory.CreateButton(canvas.transform, "Tab_Weapons", "Waffen",
-                new Vector2(0f, 1f), new Vector2(310f, -60f), new Vector2(180f, 52f),
-                () => SelectTab(Tab.Weapons), 22);
+            Button weaponsTab = UiFactory.CreateButton(header.transform, "Tab_Weapons", "Waffen",
+                new Vector2(0f, 0.5f), new Vector2(610f, 0f), new Vector2(170f, 50f),
+                () => SelectTab(Tab.Weapons), 21);
             _tabButtonImages[Tab.Weapons] = weaponsTab.GetComponent<Image>();
 
             // Linke Spalte (nur Bauteile-Tab): Auswahl des Körperbereichs.
-            _slotButtonGroup = new GameObject("SlotButtons", typeof(RectTransform));
-            var groupRect = _slotButtonGroup.GetComponent<RectTransform>();
-            groupRect.SetParent(canvas.transform, false);
-            groupRect.anchorMin = Vector2.zero;
-            groupRect.anchorMax = Vector2.one;
-            groupRect.offsetMin = Vector2.zero;
-            groupRect.offsetMax = Vector2.zero;
-
             var slots = (MechaSlot[])System.Enum.GetValues(typeof(MechaSlot));
+            Image slotPanel = UiFactory.CreatePanel(canvas.transform, "SlotPanel",
+                new Vector2(0f, 1f), new Vector2(170f, -260f), new Vector2(300f, 96f + slots.Length * 66f),
+                UiTheme.Panel);
+            _slotButtonGroup = slotPanel.gameObject;
+
+            UiFactory.CreateText(slotPanel.transform, "SlotTitle", "KÖRPERBEREICH", 15,
+                new Vector2(0.5f, 1f), new Vector2(0f, -32f), new Vector2(260f, 24f),
+                UiTheme.TextMuted, TextAnchor.MiddleLeft);
             for (int i = 0; i < slots.Length; i++)
             {
                 MechaSlot slot = slots[i];
-                Button button = UiFactory.CreateButton(_slotButtonGroup.transform, "Slot_" + slot,
+                Button button = UiFactory.CreateButton(slotPanel.transform, "Slot_" + slot,
                     MechaSlotNames.GetDisplayName(slot),
-                    new Vector2(0f, 1f), new Vector2(160f, -160f - i * 66f), new Vector2(260f, 56f),
-                    () => SelectSlot(slot), 22);
+                    new Vector2(0.5f, 1f), new Vector2(0f, -92f - i * 66f), new Vector2(260f, 56f),
+                    () => SelectSlot(slot), 21);
                 _slotButtonImages[slot] = button.GetComponent<Image>();
             }
 
             // Untere Leiste: Variante durchblättern.
             Vector2 bottomCenter = new Vector2(0.5f, 0f);
-            UiFactory.CreateButton(canvas.transform, "PrevButton", "<",
-                bottomCenter, new Vector2(-280f, 150f), new Vector2(70f, 64f), () => CycleVariant(-1), 30);
-            _partNameText = UiFactory.CreateText(canvas.transform, "PartName", string.Empty, 28,
-                bottomCenter, new Vector2(0f, 165f), new Vector2(440f, 36f), Color.white, TextAnchor.MiddleCenter);
-            _variantText = UiFactory.CreateText(canvas.transform, "VariantIndex", string.Empty, 20,
-                bottomCenter, new Vector2(0f, 132f), new Vector2(440f, 26f),
-                new Color(1f, 1f, 1f, 0.6f), TextAnchor.MiddleCenter);
-            UiFactory.CreateButton(canvas.transform, "NextButton", ">",
-                bottomCenter, new Vector2(280f, 150f), new Vector2(70f, 64f), () => CycleVariant(1), 30);
+            Image browsePanel = UiFactory.CreatePanel(canvas.transform, "BrowsePanel",
+                bottomCenter, new Vector2(0f, 150f), new Vector2(720f, 110f), UiTheme.Panel);
+            UiFactory.CreateButton(browsePanel.transform, "PrevButton", "<",
+                new Vector2(0f, 0.5f), new Vector2(55f, 0f), new Vector2(70f, 70f), () => CycleVariant(-1), 30);
+            _partNameText = UiFactory.CreateText(browsePanel.transform, "PartName", string.Empty, 27,
+                new Vector2(0.5f, 0.5f), new Vector2(0f, 15f), new Vector2(440f, 36f),
+                UiTheme.Text, TextAnchor.MiddleCenter, FontStyle.Bold);
+            _variantText = UiFactory.CreateText(browsePanel.transform, "VariantIndex", string.Empty, 18,
+                new Vector2(0.5f, 0.5f), new Vector2(0f, -20f), new Vector2(440f, 26f),
+                UiTheme.TextMuted, TextAnchor.MiddleCenter);
+            UiFactory.CreateButton(browsePanel.transform, "NextButton", ">",
+                new Vector2(1f, 0.5f), new Vector2(-55f, 0f), new Vector2(70f, 70f), () => CycleVariant(1), 30);
 
-            _statusText = UiFactory.CreateText(canvas.transform, "Status", string.Empty, 20,
-                bottomCenter, new Vector2(0f, 92f), new Vector2(600f, 26f),
-                new Color(1f, 0.8f, 0.3f), TextAnchor.MiddleCenter);
+            _statusText = UiFactory.CreateText(canvas.transform, "Status", string.Empty, 19,
+                bottomCenter, new Vector2(0f, 86f), new Vector2(600f, 26f),
+                UiTheme.Warning, TextAnchor.MiddleCenter);
 
-            // Rechte Seite: Stats des angezeigten Teils bzw. der Waffe.
-            UiFactory.CreateText(canvas.transform, "StatsTitle", "Werte", 24,
-                new Vector2(1f, 1f), new Vector2(-180f, -130f), new Vector2(280f, 30f),
-                Color.white, TextAnchor.MiddleLeft);
-            _statsText = UiFactory.CreateText(canvas.transform, "Stats", string.Empty, 20,
-                new Vector2(1f, 1f), new Vector2(-180f, -260f), new Vector2(280f, 220f),
-                new Color(1f, 1f, 1f, 0.85f), TextAnchor.UpperLeft);
+            // Rechte Spalte: Stats des angezeigten Teils bzw. der Waffe + Aktionen.
+            Image statsPanel = UiFactory.CreatePanel(canvas.transform, "StatsPanel",
+                new Vector2(1f, 1f), new Vector2(-190f, -300f), new Vector2(320f, 380f), UiTheme.Panel);
+            UiFactory.CreateText(statsPanel.transform, "StatsTitle", "WERTE", 15,
+                new Vector2(0.5f, 1f), new Vector2(0f, -32f), new Vector2(280f, 24f),
+                UiTheme.TextMuted, TextAnchor.MiddleLeft);
+            _statsText = UiFactory.CreateText(statsPanel.transform, "Stats", string.Empty, 20,
+                new Vector2(0.5f, 1f), new Vector2(0f, -180f), new Vector2(280f, 250f),
+                UiTheme.Text, TextAnchor.UpperLeft);
 
-            // Rechte Seite unten: Anwenden / Zurück.
             UiFactory.CreateButton(canvas.transform, "ApplyButton", "Anwenden",
-                new Vector2(1f, 0f), new Vector2(-180f, 220f), new Vector2(280f, 60f), Apply);
+                new Vector2(1f, 0f), new Vector2(-190f, 216f), new Vector2(320f, 60f), Apply,
+                24, primary: true);
             UiFactory.CreateButton(canvas.transform, "BackButton", "Zurück ins Testgebiet",
-                new Vector2(1f, 0f), new Vector2(-180f, 140f), new Vector2(280f, 60f), BackToGame, 20);
+                new Vector2(1f, 0f), new Vector2(-190f, 140f), new Vector2(320f, 60f), BackToGame, 20);
 
             UiFactory.CreateText(canvas.transform, "Hint",
-                "Esc / B: zurück · Nicht angewendete Änderungen werden verworfen", 16,
+                "Esc / B: zurück · Nicht angewendete Änderungen werden verworfen", 15,
                 bottomCenter, new Vector2(0f, 40f), new Vector2(900f, 24f),
-                new Color(1f, 1f, 1f, 0.45f), TextAnchor.MiddleCenter);
+                UiTheme.TextFaint, TextAnchor.MiddleCenter);
         }
 
         void SelectTab(Tab tab)
