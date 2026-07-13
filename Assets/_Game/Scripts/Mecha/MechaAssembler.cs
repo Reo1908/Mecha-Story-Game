@@ -4,97 +4,123 @@ using UnityEngine;
 namespace MechaGame
 {
     /// <summary>
-    /// Baut den Block-Mecha aus den gewählten Teilen zusammen. Für jeden Slot gibt
-    /// es feste Anker-Transforms — Arme und Beine haben je zwei (links/rechts) und
-    /// verwenden dasselbe Teil auf beiden Seiten. Die gewählte Waffe wird am
-    /// rechten Arm montiert; der Muzzle-Punkt sitzt an der Waffe und bleibt beim
-    /// Teil- und Waffenwechsel erhalten (Werkstatt-Vorschau und Spieler nutzen
-    /// denselben Assembler).
+    /// Baut den Block-Mecha gemäß dem "Mech Layout"-Plan zusammen: Der Rumpf ist
+    /// die Wurzel und definiert die Andockpunkte für Sensor, Halterungen,
+    /// Rückenmodule und Chassis. An den Halterungen hängen Waffe und Erweiterung,
+    /// am Chassis der Booster. Generator und FCS sind intern und haben keine
+    /// Optik. Bei jedem Teilewechsel wird der komplette Rig neu aufgebaut
+    /// (Werkstatt-Vorschau und Spieler nutzen denselben Assembler).
     /// </summary>
     public class MechaAssembler : MonoBehaviour
     {
-        static readonly Dictionary<MechaSlot, Vector3[]> AnchorOffsets = new Dictionary<MechaSlot, Vector3[]>
-        {
-            { MechaSlot.Torso, new[] { Vector3.zero } },
-            { MechaSlot.Head, new[] { new Vector3(0f, 1.35f, 0f) } },
-            { MechaSlot.Arms, new[] { new Vector3(-1.25f, 0.45f, 0f), new Vector3(1.25f, 0.45f, 0f) } },
-            { MechaSlot.Legs, new[] { new Vector3(-0.5f, -1.55f, 0f), new Vector3(0.5f, -1.55f, 0f) } },
-        };
+        GameObject _rig;
 
-        readonly Dictionary<MechaSlot, Transform[]> _anchors = new Dictionary<MechaSlot, Transform[]>();
-        readonly Dictionary<MechaSlot, List<GameObject>> _builtParts = new Dictionary<MechaSlot, List<GameObject>>();
+        /// <summary>Abschusspunkte der links/rechts montierten Waffen (null = keine Waffe).</summary>
+        public Transform MuzzleLeft { get; private set; }
+        public Transform MuzzleRight { get; private set; }
 
-        Transform _weaponAnchor;
-        GameObject _builtWeapon;
+        /// <summary>Schussdaten der links/rechts montierten Waffen (null = keine Waffe).</summary>
+        public WeaponSpec WeaponLeft { get; private set; }
+        public WeaponSpec WeaponRight { get; private set; }
 
-        /// <summary>Abschusspunkt der Waffe (an der Waffenhalterung am rechten Arm).</summary>
-        public Transform Muzzle { get; private set; }
-
-        void EnsureAnchors()
-        {
-            if (_anchors.Count > 0)
-                return;
-
-            foreach (KeyValuePair<MechaSlot, Vector3[]> entry in AnchorOffsets)
-            {
-                var anchors = new Transform[entry.Value.Length];
-                for (int i = 0; i < entry.Value.Length; i++)
-                {
-                    var anchorGo = new GameObject(entry.Key + "Anchor" + (entry.Value.Length > 1 ? "_" + i : string.Empty));
-                    anchorGo.transform.SetParent(transform, false);
-                    anchorGo.transform.localPosition = entry.Value[i];
-                    anchors[i] = anchorGo.transform;
-                }
-                _anchors[entry.Key] = anchors;
-            }
-
-            // Waffenhalterung am rechten Arm (zweiter Arm-Anker).
-            var weaponAnchorGo = new GameObject("WeaponAnchor");
-            weaponAnchorGo.transform.SetParent(_anchors[MechaSlot.Arms][1], false);
-            weaponAnchorGo.transform.localPosition = new Vector3(0f, -0.9f, 0.25f);
-            _weaponAnchor = weaponAnchorGo.transform;
-
-            var muzzleGo = new GameObject("Muzzle");
-            muzzleGo.transform.SetParent(_weaponAnchor, false);
-            muzzleGo.transform.localPosition = new Vector3(0f, 0f, 0.45f);
-            Muzzle = muzzleGo.transform;
-        }
-
-        /// <summary>Baut alle Slots und die Waffe gemäß der aktuellen <see cref="MechaLoadout"/>-Auswahl.</summary>
+        /// <summary>Baut den Mecha gemäß der gespeicherten <see cref="MechaLoadout"/>-Auswahl.</summary>
         public void BuildFromLoadout()
         {
-            EnsureAnchors();
-            foreach (MechaSlot slot in System.Enum.GetValues(typeof(MechaSlot)))
-                SetPart(slot, MechaPartLibrary.GetPart(slot, MechaLoadout.Get(slot)));
-            SetWeapon(WeaponLibrary.GetWeapon(MechaLoadout.GetWeapon()));
+            Rebuild(MechaLoadout.GetSnapshot());
         }
 
-        /// <summary>Tauscht die Optik eines Slots aus (bei Armen/Beinen beide Seiten).</summary>
-        public void SetPart(MechaSlot slot, MechaPartDef def)
+        /// <summary>Baut den kompletten Rig aus der übergebenen Slot-Auswahl neu auf.</summary>
+        public void Rebuild(IReadOnlyDictionary<MechaSlot, string> selection)
         {
-            EnsureAnchors();
-            if (_builtParts.TryGetValue(slot, out List<GameObject> old))
+            if (_rig != null)
+                Destroy(_rig);
+            MuzzleLeft = MuzzleRight = null;
+            WeaponLeft = WeaponRight = null;
+
+            _rig = new GameObject("Rig");
+            _rig.transform.SetParent(transform, false);
+
+            var hull = (HullDef)GetDef(selection, MechaSlot.Hull);
+            hull.BuildVisual(_rig.transform);
+
+            MechaPartDef sensor = GetDef(selection, MechaSlot.Sensor);
+            sensor.BuildVisual(CreateAnchor(_rig.transform, "SensorAnchor", hull.SensorPosition));
+
+            if (hull.CanEquipMounts)
             {
-                foreach (GameObject go in old)
+                BuildArm(selection, hull.MountPositionL, MechaSlot.MountL, MechaSlot.WeaponL, MechaSlot.ExtensionL, true);
+                BuildArm(selection, hull.MountPositionR, MechaSlot.MountR, MechaSlot.WeaponR, MechaSlot.ExtensionR, false);
+            }
+
+            if (hull.CanEquipBackUnits)
+            {
+                GetDef(selection, MechaSlot.BackUnitL)
+                    .BuildVisual(CreateAnchor(_rig.transform, "BackUnitAnchorL", hull.BackUnitPositionL), true);
+                GetDef(selection, MechaSlot.BackUnitR)
+                    .BuildVisual(CreateAnchor(_rig.transform, "BackUnitAnchorR", hull.BackUnitPositionR));
+            }
+
+            var chassis = (ChassisDef)GetDef(selection, MechaSlot.Chassis);
+            Transform chassisAnchor = CreateAnchor(_rig.transform, "ChassisAnchor", hull.ChassisPosition);
+            chassis.BuildVisual(chassisAnchor);
+            GetDef(selection, MechaSlot.Booster)
+                .BuildVisual(CreateAnchor(chassisAnchor, "BoosterAnchor", chassis.BoosterPosition));
+
+            // Generator und FCS sind interne Komponenten ohne Optik.
+        }
+
+        void BuildArm(IReadOnlyDictionary<MechaSlot, string> selection, Vector3 mountPosition,
+            MechaSlot mountSlot, MechaSlot weaponSlot, MechaSlot extensionSlot, bool leftSide)
+        {
+            var mount = (MountDef)GetDef(selection, mountSlot);
+            Transform mountAnchor = CreateAnchor(_rig.transform, mountSlot + "Anchor", mountPosition);
+            mount.BuildVisual(mountAnchor, leftSide);
+
+            // Waffe an der Halterung; Andockpunkt für links gespiegelt.
+            var weaponModule = (ModuleDef)GetDef(selection, weaponSlot);
+            Transform weaponAnchor = CreateAnchor(mountAnchor, weaponSlot + "Anchor",
+                Mirror(mount.WeaponPosition, leftSide));
+            weaponModule.BuildVisual(weaponAnchor, leftSide);
+
+            if (weaponModule.IntegratedWeapon != null)
+            {
+                Transform muzzle = CreateAnchor(weaponAnchor, "Muzzle", weaponModule.IntegratedWeapon.MuzzleOffset);
+                if (leftSide)
                 {
-                    if (go != null)
-                        Destroy(go);
+                    MuzzleLeft = muzzle;
+                    WeaponLeft = weaponModule.IntegratedWeapon;
+                }
+                else
+                {
+                    MuzzleRight = muzzle;
+                    WeaponRight = weaponModule.IntegratedWeapon;
                 }
             }
 
-            var built = new List<GameObject>();
-            foreach (Transform anchor in _anchors[slot])
-                built.Add(def.BuildVisual(anchor));
-            _builtParts[slot] = built;
+            var extension = (ModuleDef)GetDef(selection, extensionSlot);
+            extension.BuildVisual(CreateAnchor(mountAnchor, extensionSlot + "Anchor",
+                Mirror(mount.ExtensionPosition, leftSide)), leftSide);
         }
 
-        /// <summary>Tauscht die Waffenoptik an der Halterung am rechten Arm aus.</summary>
-        public void SetWeapon(WeaponDef def)
+        static Vector3 Mirror(Vector3 position, bool leftSide)
         {
-            EnsureAnchors();
-            if (_builtWeapon != null)
-                Destroy(_builtWeapon);
-            _builtWeapon = def.BuildVisual(_weaponAnchor);
+            if (leftSide)
+                position.x = -position.x;
+            return position;
+        }
+
+        static Transform CreateAnchor(Transform parent, string name, Vector3 localPosition)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = localPosition;
+            return go.transform;
+        }
+
+        static MechaPartDef GetDef(IReadOnlyDictionary<MechaSlot, string> selection, MechaSlot slot)
+        {
+            selection.TryGetValue(slot, out string id);
+            return MechaPartLibrary.GetPart(slot, id);
         }
     }
 }

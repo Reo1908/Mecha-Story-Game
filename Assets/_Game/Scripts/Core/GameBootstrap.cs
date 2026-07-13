@@ -40,8 +40,11 @@ namespace MechaGame
             HitscanWeapon weapon = playerGo.AddComponent<HitscanWeapon>();
             weapon.CameraRig = cameraRig;
             weapon.AimAssist = aimAssist;
-            weapon.Muzzle = assembler.Muzzle;
-            weapon.Weapon = WeaponLibrary.GetWeapon(MechaLoadout.GetWeapon());
+            weapon.SetWeapons(assembler.WeaponLeft, assembler.MuzzleLeft,
+                assembler.WeaponRight, assembler.MuzzleRight);
+
+            // Flugwerte aus den verbauten Teilen (Gewicht, Schub, Energiebilanz).
+            controller.ApplyStats(MechaStatsCalculator.Compute(MechaLoadout.GetSnapshot()));
 
             SpawnTargets();
 

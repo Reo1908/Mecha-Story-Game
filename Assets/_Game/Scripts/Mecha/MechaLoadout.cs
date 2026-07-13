@@ -4,17 +4,17 @@ using UnityEngine;
 namespace MechaGame
 {
     /// <summary>
-    /// Aktuell ausgewählte Mecha-Konfiguration. Bleibt als statischer Zustand
-    /// über Szenenwechsel (Testwelt &lt;-&gt; Werkstatt) erhalten und wird zusätzlich
-    /// in PlayerPrefs gespeichert, sodass sie auch einen Neustart übersteht.
+    /// Aktuell ausgewählte Mecha-Konfiguration: eine Bauteil-Id pro Slot
+    /// (inkl. Waffen — sie sind seit dem Komponenten-Umbau normale Slots).
+    /// Bleibt als statischer Zustand über Szenenwechsel (Testwelt &lt;-&gt; Werkstatt)
+    /// erhalten und wird zusätzlich in PlayerPrefs gespeichert, sodass sie auch
+    /// einen Neustart übersteht.
     /// </summary>
     public static class MechaLoadout
     {
-        const string PrefsPrefix = "mecha.part.";
-        const string WeaponPrefsKey = "mecha.weapon";
+        const string PrefsPrefix = "mecha.slot.";
 
         static Dictionary<MechaSlot, string> _selected;
-        static string _weapon;
 
         static void EnsureLoaded()
         {
@@ -22,15 +22,12 @@ namespace MechaGame
                 return;
 
             _selected = new Dictionary<MechaSlot, string>();
-            foreach (MechaSlot slot in System.Enum.GetValues(typeof(MechaSlot)))
+            foreach (MechaSlot slot in MechaSlots.All)
             {
                 string saved = PlayerPrefs.GetString(PrefsPrefix + slot, string.Empty);
                 // GetPart validiert die Id und fällt sonst auf die erste Variante zurück.
                 _selected[slot] = MechaPartLibrary.GetPart(slot, saved).Id;
             }
-
-            // GetWeapon validiert die Id und fällt sonst auf die erste Waffe zurück.
-            _weapon = WeaponLibrary.GetWeapon(PlayerPrefs.GetString(WeaponPrefsKey, string.Empty)).Id;
         }
 
         public static string Get(MechaSlot slot)
@@ -43,18 +40,6 @@ namespace MechaGame
         {
             EnsureLoaded();
             _selected[slot] = MechaPartLibrary.GetPart(slot, partId).Id;
-        }
-
-        public static string GetWeapon()
-        {
-            EnsureLoaded();
-            return _weapon;
-        }
-
-        public static void SetWeapon(string weaponId)
-        {
-            EnsureLoaded();
-            _weapon = WeaponLibrary.GetWeapon(weaponId).Id;
         }
 
         /// <summary>Kopie der aktuellen Auswahl, z. B. als Arbeitskopie für die Werkstatt.</summary>
@@ -77,7 +62,6 @@ namespace MechaGame
             EnsureLoaded();
             foreach (KeyValuePair<MechaSlot, string> entry in _selected)
                 PlayerPrefs.SetString(PrefsPrefix + entry.Key, entry.Value);
-            PlayerPrefs.SetString(WeaponPrefsKey, _weapon);
             PlayerPrefs.Save();
         }
     }

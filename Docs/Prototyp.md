@@ -54,7 +54,9 @@ Assets/_Game/
     ├── Input/      InputReader (Maus/Tastatur + Gamepad, Geräteerkennung, Deadzone)
     ├── Player/     MechaController (Flug), MechaCameraRig (Third-Person-Kamera)
     ├── Combat/     HitscanWeapon, AimAssist, TargetDummy, TracerEffect, HitFlash
-    ├── Mecha/      MechaParts (Datenmodell), MechaPartLibrary (Katalog),
+    ├── Mecha/      MechaParts (Komponenten-Datenmodell nach Plan, siehe
+    │               MechaKomponenten.md), MechaPartLibrary (Katalog),
+    │               MechaStats (Gesamtwerte/Energiebilanz),
     │               MechaLoadout (Session-/PlayerPrefs-Konfiguration),
     │               MechaAssembler (baut den Block-Mecha), MaterialCache
     ├── Workshop/   WorkshopController (Werkstatt-Logik + UI)
@@ -74,9 +76,11 @@ Sensitivitäten, Deadzone, Kameraabstand/-glättung, Feuerrate, Schaden,
 Ziel-Lebenspunkte sowie alle Aim-Assist-Parameter (Winkel, Reichweite, Stärke
 getrennt für Maus/Controller, Glättung). Änderungen wirken sofort im Playmode.
 
-Die Bauteil-Varianten (3 pro Körperbereich) sind zentral in
-`MechaPartLibrary.cs` definiert — inklusive Platzhalter-Stats (Gewicht, Panzerung,
-Energie, Waffenplätze …), die noch keine Gameplay-Wirkung haben.
+Die Bauteil-Varianten (je 2–5 pro Komponente: Rumpf, Sensor, Halterungen,
+Waffen, Erweiterungen, Rückenmodule, Chassis, Booster, Generator, FCS) sind
+zentral in `MechaPartLibrary.cs` definiert. Das Komponenten-System folgt dem
+"Mech Layout"-Plan — Details und welche Werte bereits Gameplay-Wirkung haben:
+siehe [MechaKomponenten.md](MechaKomponenten.md).
 
 ## Systeme und Platzhalter
 

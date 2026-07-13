@@ -55,7 +55,7 @@ namespace MechaGame
         [Tooltip("Maximaler Kamera-Pitch in Grad (positiv = nach unten schauen)")]
         public float maxPitch = 80f;
 
-        [Header("Waffe (veraltet — Werte kommen jetzt aus der Waffen-Auswahl in der Werkstatt, siehe WeaponLibrary)")]
+        [Header("Waffe (veraltet — Werte kommen jetzt aus den Waffen-Slots der Werkstatt, siehe MechaPartLibrary)")]
         [Tooltip("Schüsse pro Sekunde")]
         public float fireRate = 7f;
         [Tooltip("Schaden pro Treffer")]
