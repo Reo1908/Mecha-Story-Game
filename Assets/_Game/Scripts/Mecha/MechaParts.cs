@@ -46,11 +46,11 @@ namespace MechaGame
         Fcs
     }
 
-    /// <summary>Automatik-Modus interner Waffen ("InternalWeaponAutoType" laut Plan).</summary>
+    /// <summary>Automatik-Modus interner Waffen ("InternalWeaponAutoType(AT,DF)" laut Plan).</summary>
     public enum InternalWeaponMode
     {
-        Ai,
-        DirectFire
+        AutoTarget,   // AT
+        DirectFire    // DF
     }
 
     /// <summary>Slot-Hilfsfunktionen: Kategorie-Zuordnung, Anzeigenamen, UI-Reihenfolge.</summary>
@@ -241,7 +241,7 @@ namespace MechaGame
     [System.Serializable]
     public class HullDef : MechaPartDef
     {
-        public int FlareAmount;
+        public int FlaresAmount;
         public bool CanEquipMounts = true;
         public bool CanEquipBackUnits = true;
         public WeaponSpec InternalWeaponLeft;
@@ -271,6 +271,8 @@ namespace MechaGame
         public float MaxAimAngleX;      // Grad
         public float MaxAimAngleY;      // Grad
         public int AimPose;
+        // Bedeutung laut Plan noch unklar — als Daten übernommen.
+        public bool FlatChassisRemoveTorso;
         public WeaponSpec InternalWeapon;
 
         // Andockpunkte relativ zum Halterungs-Anker (rechte Seite; links gespiegelt).
@@ -301,8 +303,8 @@ namespace MechaGame
         public float BalancePosLimitY;
         public float BalanceNegLimitX;
         public float BalanceNegLimitY;
-        public float BoostMovementSpeedX;   // max. Horizontalgeschwindigkeit in m/s
-        public float BoostMovementSpeedY;   // max. Vertikalgeschwindigkeit in m/s
+        public float BaseMovementSpeedX;    // max. Horizontalgeschwindigkeit in m/s
+        public float BaseMovementSpeedY;    // max. Vertikalgeschwindigkeit in m/s
         public float MovementStrength;
         public float JumpStrength;
         public float Braking;
@@ -310,7 +312,7 @@ namespace MechaGame
         public bool CanWallJump;
         public bool CanFloat;
         public bool BoostJump;
-        public int MountedPose;
+        public int MountRestPose;
         public BoosterDef InternalBooster;
 
         /// <summary>Andockpunkt des Boosters relativ zum Chassis-Anker.</summary>
@@ -325,11 +327,11 @@ namespace MechaGame
     {
         public float EnergyDrain;
         public float BoostPower;        // kN
-        public float BoostSlidePower;   // kN
+        public float BoostGlidePower;   // kN
         public float BoostFuelUsage;
         public float BoostHeat;
         public float BoostResponse;     // 1 = normal, größer = direkter
-        public float BoostSlideOnJump;
+        public float BoostGlideOnJump;
 
         public BoosterDef() { Category = MechaPartCategory.Booster; }
     }

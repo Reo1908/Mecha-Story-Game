@@ -90,8 +90,8 @@ namespace MechaGame
             // Energiedefizit drosselt den gesamten Mecha spürbar.
             float energyFactor = stats.EnergyDeficit ? 0.75f : 1f;
 
-            stats.MaxSpeedHorizontal = chassis.BoostMovementSpeedX * powerFactor * energyFactor;
-            stats.MaxSpeedVertical = chassis.BoostMovementSpeedY * powerFactor * energyFactor;
+            stats.MaxSpeedHorizontal = chassis.BaseMovementSpeedX * powerFactor * energyFactor;
+            stats.MaxSpeedVertical = chassis.BaseMovementSpeedY * powerFactor * energyFactor;
             stats.AccelerationScale = Mathf.Clamp(powerFactor * Mathf.Max(0.25f, booster.BoostResponse), 0.5f, 2f);
             stats.BrakeScale = Mathf.Clamp(chassis.Braking / 30f, 0.6f, 1.6f);
             return stats;

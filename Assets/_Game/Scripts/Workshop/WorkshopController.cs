@@ -207,8 +207,8 @@ namespace MechaGame
                     AppendFlag(sb, "Bio-Sensor", sensor.HasBioSensor);
                     break;
                 case HullDef hull:
-                    if (hull.FlareAmount > 0)
-                        sb.AppendLine("Täuschkörper: " + hull.FlareAmount);
+                    if (hull.FlaresAmount > 0)
+                        sb.AppendLine("Täuschkörper: " + hull.FlaresAmount);
                     if (!hull.CanEquipMounts)
                         sb.AppendLine("Keine Halterungen möglich!");
                     if (!hull.CanEquipBackUnits)
@@ -222,8 +222,8 @@ namespace MechaGame
                     AppendStat(sb, "Zielwinkel", mount.MaxAimAngleX, "° / " + mount.MaxAimAngleY.ToString("0.#") + "°");
                     break;
                 case ChassisDef chassis:
-                    AppendStat(sb, "Tempo horizontal", chassis.BoostMovementSpeedX, " m/s");
-                    AppendStat(sb, "Tempo vertikal", chassis.BoostMovementSpeedY, " m/s");
+                    AppendStat(sb, "Tempo horizontal", chassis.BaseMovementSpeedX, " m/s");
+                    AppendStat(sb, "Tempo vertikal", chassis.BaseMovementSpeedY, " m/s");
                     AppendStat(sb, "Antriebskraft", chassis.MovementStrength);
                     AppendStat(sb, "Sprungkraft", chassis.JumpStrength);
                     AppendStat(sb, "Bremskraft", chassis.Braking);
@@ -234,7 +234,7 @@ namespace MechaGame
                     break;
                 case BoosterDef booster:
                     AppendStat(sb, "Schub", booster.BoostPower, " kN");
-                    AppendStat(sb, "Slide-Schub", booster.BoostSlidePower, " kN");
+                    AppendStat(sb, "Slide-Schub", booster.BoostGlidePower, " kN");
                     AppendStat(sb, "EN-Verbrauch", booster.EnergyDrain);
                     AppendStat(sb, "Treibstoff/s", booster.BoostFuelUsage);
                     AppendStat(sb, "Hitze", booster.BoostHeat);

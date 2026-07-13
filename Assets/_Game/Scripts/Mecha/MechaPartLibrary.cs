@@ -92,7 +92,7 @@ namespace MechaGame
                 DisplayName = "Standard-Rumpf",
                 Weight = 7000f, Integrity = 1200f, DragCoefficient = 0.32f, ArmorThickness = 120f,
                 ThermalResistance = 40f, Cooling = 25f, EnUsage = 8f,
-                FlareAmount = 2,
+                FlaresAmount = 2,
                 Blocks =
                 {
                     Block(0f, 0f, 0f, 1.7f, 1.9f, 1.1f, new Color(0.85f, 0.25f, 0.15f)),
@@ -105,7 +105,7 @@ namespace MechaGame
                 DisplayName = "Panzer-Rumpf",
                 Weight = 10500f, Integrity = 2000f, DragCoefficient = 0.45f, ArmorThickness = 240f,
                 ThermalResistance = 60f, Cooling = 30f, EnUsage = 10f,
-                FlareAmount = 4,
+                FlaresAmount = 4,
                 MountPositionL = new Vector3(-1.45f, 0.45f, 0f),
                 MountPositionR = new Vector3(1.45f, 0.45f, 0f),
                 Blocks =
@@ -120,7 +120,7 @@ namespace MechaGame
                 DisplayName = "Leichtbau-Rumpf",
                 Weight = 4800f, Integrity = 800f, DragCoefficient = 0.24f, ArmorThickness = 60f,
                 ThermalResistance = 25f, Cooling = 20f, EnUsage = 6f,
-                FlareAmount = 0,
+                FlaresAmount = 0,
                 CanEquipBackUnits = false,
                 Blocks =
                 {
@@ -384,12 +384,12 @@ namespace MechaGame
                 DisplayName = "Standard-Läufer",
                 Weight = 6500f, Integrity = 900f, DragCoefficient = 0.3f, ArmorThickness = 100f,
                 Cooling = 10f, EnUsage = 4f,
-                BoostMovementSpeedX = 42f, BoostMovementSpeedY = 26f,
+                BaseMovementSpeedX = 42f, BaseMovementSpeedY = 26f,
                 MovementStrength = 50f, JumpStrength = 40f, Braking = 30f,
                 CanJump = true, BoostJump = true,
                 BalancePosLimitX = 25f, BalancePosLimitY = 20f,
                 BalanceNegLimitX = 25f, BalanceNegLimitY = 15f,
-                MountedPose = 0,
+                MountRestPose = 0,
                 Blocks =
                 {
                     Block(0f, 0.1f, 0f, 1.2f, 0.5f, 0.9f, new Color(0.1f, 0.55f, 0.2f)),
@@ -403,12 +403,12 @@ namespace MechaGame
                 DisplayName = "Panzer-Läufer",
                 Weight = 9800f, Integrity = 1600f, DragCoefficient = 0.42f, ArmorThickness = 220f,
                 Cooling = 12f, EnUsage = 5f,
-                BoostMovementSpeedX = 34f, BoostMovementSpeedY = 20f,
+                BaseMovementSpeedX = 34f, BaseMovementSpeedY = 20f,
                 MovementStrength = 80f, JumpStrength = 25f, Braking = 45f,
                 CanJump = true, BoostJump = false,
                 BalancePosLimitX = 35f, BalancePosLimitY = 30f,
                 BalanceNegLimitX = 35f, BalanceNegLimitY = 25f,
-                MountedPose = 1,
+                MountRestPose = 1,
                 Blocks =
                 {
                     Block(0f, 0.1f, 0f, 1.4f, 0.6f, 1f, new Color(0.15f, 0.42f, 0.18f)),
@@ -424,12 +424,12 @@ namespace MechaGame
                 DisplayName = "Sprinter",
                 Weight = 4600f, Integrity = 600f, DragCoefficient = 0.24f, ArmorThickness = 50f,
                 Cooling = 8f, EnUsage = 3f,
-                BoostMovementSpeedX = 52f, BoostMovementSpeedY = 32f,
+                BaseMovementSpeedX = 52f, BaseMovementSpeedY = 32f,
                 MovementStrength = 35f, JumpStrength = 55f, Braking = 22f,
                 CanJump = true, CanWallJump = true, BoostJump = true,
                 BalancePosLimitX = 18f, BalancePosLimitY = 15f,
                 BalanceNegLimitX = 18f, BalanceNegLimitY = 12f,
-                MountedPose = 2,
+                MountRestPose = 2,
                 Blocks =
                 {
                     Block(0f, 0.1f, 0f, 1f, 0.4f, 0.8f, new Color(0.35f, 0.75f, 0.35f)),
@@ -446,8 +446,8 @@ namespace MechaGame
                 Id = "boost_standard",
                 DisplayName = "Standard-Booster",
                 Weight = 1600f, Integrity = 200f,
-                EnergyDrain = 6f, BoostPower = 900f, BoostSlidePower = 500f,
-                BoostFuelUsage = 4f, BoostHeat = 18f, BoostResponse = 1f, BoostSlideOnJump = 0.5f,
+                EnergyDrain = 6f, BoostPower = 900f, BoostGlidePower = 500f,
+                BoostFuelUsage = 4f, BoostHeat = 18f, BoostResponse = 1f, BoostGlideOnJump = 0.5f,
                 Blocks =
                 {
                     Block(0f, 0f, -0.1f, 0.8f, 0.45f, 0.4f, new Color(0.55f, 0.58f, 0.62f)),
@@ -460,8 +460,8 @@ namespace MechaGame
                 Id = "boost_heavy",
                 DisplayName = "Hochleistungs-Booster",
                 Weight = 2500f, Integrity = 260f,
-                EnergyDrain = 10f, BoostPower = 1400f, BoostSlidePower = 700f,
-                BoostFuelUsage = 7f, BoostHeat = 35f, BoostResponse = 0.85f, BoostSlideOnJump = 0.6f,
+                EnergyDrain = 10f, BoostPower = 1400f, BoostGlidePower = 700f,
+                BoostFuelUsage = 7f, BoostHeat = 35f, BoostResponse = 0.85f, BoostGlideOnJump = 0.6f,
                 Blocks =
                 {
                     Block(0f, 0f, -0.1f, 1f, 0.55f, 0.5f, new Color(0.45f, 0.42f, 0.5f)),
@@ -474,8 +474,8 @@ namespace MechaGame
                 Id = "boost_eco",
                 DisplayName = "Effizienz-Booster",
                 Weight = 1100f, Integrity = 150f,
-                EnergyDrain = 3f, BoostPower = 650f, BoostSlidePower = 380f,
-                BoostFuelUsage = 2.5f, BoostHeat = 10f, BoostResponse = 1.15f, BoostSlideOnJump = 0.4f,
+                EnergyDrain = 3f, BoostPower = 650f, BoostGlidePower = 380f,
+                BoostFuelUsage = 2.5f, BoostHeat = 10f, BoostResponse = 1.15f, BoostGlideOnJump = 0.4f,
                 Blocks =
                 {
                     Block(0f, 0f, -0.1f, 0.65f, 0.4f, 0.35f, new Color(0.6f, 0.7f, 0.65f)),

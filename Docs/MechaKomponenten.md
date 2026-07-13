@@ -1,7 +1,8 @@
 # Mecha-Komponenten — Spezifikation aus dem "Mech Layout"-Plan
 
-Extrahiert aus dem Miro-Board (Stand 13.07.2026). Dieses Dokument ist die
-Referenz für das Komponenten-System im Code (`Assets/_Game/Scripts/Mecha/`).
+Extrahiert aus dem Miro-Board und gegen den CSV-Export abgeglichen
+(Stand 13.07.2026). Dieses Dokument ist die Referenz für das
+Komponenten-System im Code (`Assets/_Game/Scripts/Mecha/`).
 
 ## Aufbau
 
@@ -32,21 +33,22 @@ ENUsage — plus FuelAmount (kg) und Lift bei den tragenden Außenteilen.
 
 - **Sensor**: RadarRange (m), ECMResistance (0–1), HasHeatVision,
   HasNightVision, HasBioSensor, InternalWeaponAuto (Weapon),
-  InternalWeaponAutoType, MaxAimAngleX/Y, LookSpeed
-- **Hull**: FlareAmount, CanEquipMounts, CanEquipBackUnit, InternalSensor,
-  InternalWeaponLeft/Right/Auto, InternalWeaponAutoType, Positionen für
-  Sensor, Chassis, L/R Mount, L/R Back Unit
+  InternalWeaponAutoType (AT, DF), MaxAimAngleX/Y, LookSpeed
+- **Hull**: FlaresAmount, CanEquipMounts, CanEquipBackUnit, InternalSensor,
+  InternalWeaponLeft/Right/Auto, InternalWeaponAutoType (AT, DF),
+  Positionen für Sensor, Chassis, L/R Mount, L/R Back Unit
 - **Mount**: ArmStrength, ArmSpeed, AimNoise, RecoilResistance,
-  MaxAimAngleX/Y, AimPose (int), InternalWeapon, ExtensionPosition
+  MaxAimAngleX/Y, AimPose (int), FlatChassisRemoveTorso (bool),
+  InternalWeapon, ExtensionPosition
 - **Extension / Weapon / Back Unit** (gemeinsamer Block):
   IntegratedWeapon (Weapon), IntegratedDevice (Device),
   IntegratedBooster (Booster)
 - **Chassis**: BalancePosLimitX/Y, BalanceNegLimitX/Y,
-  ChassisBoostMovementSpeedX/Y, ChassisMovementStrength,
+  ChassisBaseMovementSpeedX/Y, ChassisMovementStrength,
   ChassisJumpStrength, ChassisBraking, ChassisCanJump, ChassisCanWallJump,
-  ChassisCanFloat, ChassisBoostJump, MountedPose (int), InternalBooster
-- **Booster**: EnergyDrain, BoostPower (kN), BoostSlidePower (kN),
-  BoostFuelUsage, BoostHeat, BoostResponse, BoostSlideOnJump
+  ChassisCanFloat, ChassisBoostJump, MountRestPose (int), InternalBooster
+- **Booster**: EnergyDrain, BoostPower (kN), BoostGlidePower (kN),
+  BoostFuelUsage, BoostHeat, BoostResponse, BoostGlideOnJump
 - **Generator**: Weight, ENCapacity, HeatGeneration, Redzone
 - **FCS**: Weight, ENUsage, NoiseReduction, ECMResistance,
   LockBoxSize (Vector2), LockTime
@@ -55,7 +57,7 @@ ENUsage — plus FuelAmount (kg) und Lift bei den tragenden Außenteilen.
 
 - **Waffen**: `IntegratedWeapon` (Damage, FireRate, Range) treibt die
   Hitscan-Waffe; links und rechts feuern unabhängig mit eigener Feuerrate.
-- **Flugwerte**: `ChassisBoostMovementSpeedX/Y` sind die Basis-Geschwindigkeiten;
+- **Flugwerte**: `ChassisBaseMovementSpeedX/Y` sind die Basis-Geschwindigkeiten;
   das Schub-Gewichts-Verhältnis (Booster-BoostPower inkl. integrierter Booster
   vs. Gesamtgewicht) skaliert Tempo und Beschleunigung, `ChassisBraking` das
   Abbremsen (`MechaStatsCalculator`).
@@ -76,10 +78,10 @@ Treibstoffverbrauch, Boden-Bewegung (Jump/WallJump/Float).
 
 ## Offene Punkte aus dem Board (bitte klären)
 
-1. **InternalWeaponAutoType "(AI, DF)"** — als Enum `InternalWeaponMode { Ai, DirectFire }`
-   interpretiert. Richtig?
-2. **Mount: "HasChassisRemovedTorso"** — Bedeutung unklar (Torso-Modus ohne
-   Chassis?), noch nicht umgesetzt.
+1. **InternalWeaponAutoType "(AT, DF)"** — als Enum
+   `InternalWeaponMode { AutoTarget, DirectFire }` interpretiert. Richtig?
+2. **Mount: "FlatChassisRemoveTorso"** — Bedeutung unklar; als bool-Datenfeld
+   übernommen, aber ohne Wirkung.
 3. **IntegratedDevice (Device)** — der Typ "Device" ist auf dem Board nicht
    definiert; aktuell nur ein Platzhalter-String.
 4. Interne Waffen (Hull/Sensor/Mount `InternalWeapon*`) sind als Daten da,
