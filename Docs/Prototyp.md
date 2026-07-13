@@ -25,6 +25,7 @@ Szenenwechsel funktioniert daher auch im Editor-Playmode und im Build.
 | Strg oder Shift | sinken |
 | Maus | Kamera / Zielen |
 | Linke Maustaste | schießen |
+| Rechte Maustaste (halten) | Energieschild |
 | Tab | Werkstatt öffnen |
 | Esc | Pausenmenü / Maus freigeben |
 
@@ -36,6 +37,7 @@ Szenenwechsel funktioniert daher auch im Editor-Playmode und im Build.
 | Rechter Stick | Kamera / Zielen |
 | RB / LB | aufsteigen / sinken |
 | RT | schießen |
+| LT (halten) | Energieschild |
 | Y | Werkstatt |
 | Start | Pausenmenü |
 | B (in der Werkstatt) | zurück ins Testgebiet |
@@ -91,6 +93,11 @@ siehe [MechaKomponenten.md](MechaKomponenten.md).
   bei Treffern auf, respawnen nach 5 s. Keine KI.
 - **Waffe**: zuverlässiges Hitscan-System mit Tracer, Mündungslicht und
   Treffereffekt — Platzhalter für spätere Projektil-/Partikelsysteme.
+- **Energieschild**: halbtransparente, gekrümmte Scheibe vor dem Mecha
+  (rechte Maustaste / LT halten). Hält maximal `shieldMaxSeconds` (3 s) am
+  Stück, lädt kontinuierlich wieder auf (`shieldRechargeSeconds`); nach
+  völliger Erschöpfung erst ab `shieldReactivateFraction` wieder nutzbar.
+  Blockt noch keinen Schaden — es gibt noch keine Gegner, die schießen.
 - **UI**: komplett in Code erzeugte uGUI (Fadenkreuz, Geschwindigkeit,
   Zielstatus, Hitmarker, Steuerungshinweis, Pausenmenü, Werkstatt-Menü).
 - **Konfiguration**: bleibt über Szenenwechsel erhalten (statisch) und wird

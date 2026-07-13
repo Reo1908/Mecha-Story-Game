@@ -46,12 +46,16 @@ namespace MechaGame
             // Flugwerte aus den verbauten Teilen (Gewicht, Schub, Energiebilanz).
             controller.ApplyStats(MechaStatsCalculator.Compute(MechaLoadout.GetSnapshot()));
 
+            // Energieschild (rechte Maustaste / LT).
+            EnergyShield shield = playerGo.AddComponent<EnergyShield>();
+            shield.Init(visualGo.transform);
+
             SpawnTargets();
 
             // HUD
             var hudGo = new GameObject("HUD");
             HudController hud = hudGo.AddComponent<HudController>();
-            hud.Init(controller, aimAssist, weapon);
+            hud.Init(controller, aimAssist, weapon, shield);
         }
 
         static void BuildEnvironment()

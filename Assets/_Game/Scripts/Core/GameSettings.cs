@@ -63,6 +63,15 @@ namespace MechaGame
         [Tooltip("Maximale Reichweite des Hitscan-Strahls in Metern")]
         public float weaponRange = 400f;
 
+        [Header("Schild")]
+        [Tooltip("Wie viele Sekunden der Schild bei voller Ladung durchgehend halten kann")]
+        public float shieldMaxSeconds = 3f;
+        [Tooltip("Sekunden von leer bis voll aufgeladen (kürzere Nutzung lädt entsprechend schneller)")]
+        public float shieldRechargeSeconds = 4f;
+        [Range(0f, 1f)]
+        [Tooltip("Ab welchem Ladestand der Schild nach völliger Erschöpfung wieder aktivierbar ist")]
+        public float shieldReactivateFraction = 0.25f;
+
         [Header("Ziele")]
         [Tooltip("Lebenspunkte eines Ziels")]
         public float targetHealth = 30f;

@@ -13,9 +13,12 @@ namespace MechaGame
     {
         const float HitmarkerDuration = 0.25f;
 
+        const float ShieldBarWidth = 208f;
+
         MechaController _controller;
         AimAssist _aimAssist;
         HitscanWeapon _weapon;
+        EnergyShield _shield;
 
         RectTransform _crosshair;
         Image[] _crosshairImages;
@@ -24,6 +27,8 @@ namespace MechaGame
         Text _targetText;
         Text _killText;
         Text _deviceText;
+        RectTransform _shieldFill;
+        Image _shieldFillImage;
         GameObject _pausePanel;
 
         float _hitmarkerTimer;
@@ -31,11 +36,13 @@ namespace MechaGame
         bool _hitmarkerWasKill;
         bool _paused;
 
-        public void Init(MechaController controller, AimAssist aimAssist, HitscanWeapon weapon)
+        public void Init(MechaController controller, AimAssist aimAssist, HitscanWeapon weapon,
+            EnergyShield shield)
         {
             _controller = controller;
             _aimAssist = aimAssist;
             _weapon = weapon;
+            _shield = shield;
             _weapon.OnHit += HandleHit;
 
             BuildUi();
@@ -98,6 +105,22 @@ namespace MechaGame
                 new Vector2(0f, 0f), new Vector2(120f, 30f), new Vector2(200f, 44f),
                 UiTheme.Text, TextAnchor.MiddleLeft, FontStyle.Bold);
 
+            // Schild-Ladebalken über dem Tacho.
+            Image shieldPanel = UiFactory.CreatePanel(canvas.transform, "ShieldPanel",
+                new Vector2(0f, 0f), new Vector2(160f, 160f), new Vector2(240f, 52f), UiTheme.Panel);
+            UiFactory.CreateText(shieldPanel.transform, "ShieldLabel", "SCHILD", 13,
+                new Vector2(0f, 1f), new Vector2(120f, -15f), new Vector2(200f, 18f),
+                UiTheme.TextMuted, TextAnchor.MiddleLeft);
+            Image shieldBarBg = UiFactory.CreateImage(shieldPanel.transform, "BarBg",
+                new Vector2(0.5f, 0f), new Vector2(0f, 15f), new Vector2(ShieldBarWidth, 10f),
+                new Color(1f, 1f, 1f, 0.12f));
+            _shieldFill = UiFactory.CreateRect(shieldBarBg.transform, "Fill",
+                new Vector2(0f, 0.5f), Vector2.zero, new Vector2(ShieldBarWidth, 10f));
+            _shieldFill.pivot = new Vector2(0f, 0.5f);
+            _shieldFillImage = _shieldFill.gameObject.AddComponent<Image>();
+            _shieldFillImage.raycastTarget = false;
+            _shieldFillImage.color = UiTheme.Accent;
+
             _deviceText = UiFactory.CreateText(canvas.transform, "DeviceText", string.Empty, 16,
                 new Vector2(1f, 1f), new Vector2(-150f, -32f), new Vector2(260f, 28f),
                 UiTheme.TextFaint, TextAnchor.MiddleRight);
@@ -106,8 +129,8 @@ namespace MechaGame
                 new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(1240f, 58f),
                 new Color(UiTheme.Panel.r, UiTheme.Panel.g, UiTheme.Panel.b, 0.5f));
             UiFactory.CreateText(hintPanel.transform, "ControlsHint",
-                "WASD bewegen · Leertaste hoch · Strg/Shift runter · Maus zielen · LMB schießen · Tab Werkstatt · Esc Menü\n" +
-                "Controller: Sticks bewegen/zielen · RB hoch · LB runter · RT schießen · Y Werkstatt · Start Menü",
+                "WASD bewegen · Leertaste hoch · Strg/Shift runter · Maus zielen · LMB schießen · RMB Schild · Tab Werkstatt · Esc Menü\n" +
+                "Controller: Sticks bewegen/zielen · RB hoch · LB runter · RT schießen · LT Schild · Y Werkstatt · Start Menü",
                 15, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1200f, 54f),
                 UiTheme.TextMuted, TextAnchor.MiddleCenter);
 
@@ -158,6 +181,7 @@ namespace MechaGame
             }
 
             UpdateSpeed();
+            UpdateShieldBar();
             UpdateCrosshair();
             UpdateHitmarker();
             UpdateKillText();
@@ -170,6 +194,20 @@ namespace MechaGame
         {
             if (_speedText != null && _controller != null)
                 _speedText.text = Mathf.RoundToInt(_controller.CurrentSpeed) + " m/s";
+        }
+
+        void UpdateShieldBar()
+        {
+            if (_shield == null || _shieldFill == null)
+                return;
+
+            _shieldFill.sizeDelta = new Vector2(ShieldBarWidth * _shield.Charge01, 10f);
+            Color color = UiTheme.Accent;
+            if (_shield.IsDepleted)
+                color = UiTheme.Danger;
+            else if (_shield.IsActive)
+                color = new Color(0.55f, 0.88f, 1f);
+            _shieldFillImage.color = color;
         }
 
         void UpdateCrosshair()
