@@ -8,7 +8,6 @@ namespace MechaGame
     /// <see cref="MechaCameraRig"/>, die Schusskorrektur über GetAssistedShotDirection.
     /// Mit Controller ist die Unterstützung stärker als mit Maus.
     /// </summary>
-    /// Test Hallo Bla
     public class AimAssist : MonoBehaviour
     {
         public MechaCameraRig CameraRig;
