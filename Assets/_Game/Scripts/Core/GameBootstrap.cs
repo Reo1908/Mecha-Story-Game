@@ -40,15 +40,22 @@ namespace MechaGame
             HitscanWeapon weapon = playerGo.AddComponent<HitscanWeapon>();
             weapon.CameraRig = cameraRig;
             weapon.AimAssist = aimAssist;
-            weapon.Muzzle = assembler.Muzzle;
-            weapon.Weapon = WeaponLibrary.GetWeapon(MechaLoadout.GetWeapon());
+            weapon.SetWeapons(assembler.WeaponLeft, assembler.MuzzleLeft,
+                assembler.WeaponRight, assembler.MuzzleRight);
+
+            // Flugwerte aus den verbauten Teilen (Gewicht, Schub, Energiebilanz).
+            controller.ApplyStats(MechaStatsCalculator.Compute(MechaLoadout.GetSnapshot()));
+
+            // Energieschild (rechte Maustaste / LT).
+            EnergyShield shield = playerGo.AddComponent<EnergyShield>();
+            shield.Init(visualGo.transform);
 
             SpawnTargets();
 
             // HUD
             var hudGo = new GameObject("HUD");
             HudController hud = hudGo.AddComponent<HudController>();
-            hud.Init(controller, aimAssist, weapon);
+            hud.Init(controller, aimAssist, weapon, shield);
         }
 
         static void BuildEnvironment()

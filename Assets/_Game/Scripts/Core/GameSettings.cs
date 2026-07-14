@@ -55,13 +55,22 @@ namespace MechaGame
         [Tooltip("Maximaler Kamera-Pitch in Grad (positiv = nach unten schauen)")]
         public float maxPitch = 80f;
 
-        [Header("Waffe (veraltet — Werte kommen jetzt aus der Waffen-Auswahl in der Werkstatt, siehe WeaponLibrary)")]
+        [Header("Waffe (veraltet — Werte kommen jetzt aus den Waffen-Slots der Werkstatt, siehe MechaPartLibrary)")]
         [Tooltip("Schüsse pro Sekunde")]
         public float fireRate = 7f;
         [Tooltip("Schaden pro Treffer")]
         public float weaponDamage = 10f;
         [Tooltip("Maximale Reichweite des Hitscan-Strahls in Metern")]
         public float weaponRange = 400f;
+
+        [Header("Schild")]
+        [Tooltip("Wie viele Sekunden der Schild bei voller Ladung durchgehend halten kann")]
+        public float shieldMaxSeconds = 3f;
+        [Tooltip("Sekunden von leer bis voll aufgeladen (kürzere Nutzung lädt entsprechend schneller)")]
+        public float shieldRechargeSeconds = 4f;
+        [Range(0f, 1f)]
+        [Tooltip("Ab welchem Ladestand der Schild nach völliger Erschöpfung wieder aktivierbar ist")]
+        public float shieldReactivateFraction = 0.25f;
 
         [Header("Ziele")]
         [Tooltip("Lebenspunkte eines Ziels")]

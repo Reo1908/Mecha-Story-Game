@@ -20,6 +20,12 @@ namespace MechaGame
         Vector3 _smoothDampVelocity;
         Transform _visualRoot;
 
+        bool _hasStats;
+        float _maxHorizontalSpeed;
+        float _maxVerticalSpeed;
+        float _accelerationScale = 1f;
+        float _brakeScale = 1f;
+
         public Vector3 Velocity => _velocity;
         public float CurrentSpeed => _velocity.magnitude;
 
@@ -27,6 +33,20 @@ namespace MechaGame
         public void SetVisualRoot(Transform visualRoot)
         {
             _visualRoot = visualRoot;
+        }
+
+        /// <summary>
+        /// Übernimmt die aus den verbauten Teilen berechneten Flugwerte
+        /// (Chassis-Geschwindigkeiten, Schub-Gewichts-Verhältnis, Energiebilanz).
+        /// Ohne Aufruf gelten die GameSettings-Werte.
+        /// </summary>
+        public void ApplyStats(MechaStats stats)
+        {
+            _hasStats = true;
+            _maxHorizontalSpeed = stats.MaxSpeedHorizontal;
+            _maxVerticalSpeed = stats.MaxSpeedVertical;
+            _accelerationScale = Mathf.Max(0.1f, stats.AccelerationScale);
+            _brakeScale = Mathf.Max(0.1f, stats.BrakeScale);
         }
 
         void Update()
@@ -42,14 +62,17 @@ namespace MechaGame
                 ? Quaternion.Euler(0f, CameraRig.Yaw, 0f) * Vector3.right
                 : transform.right;
 
+            float maxHorizontalSpeed = _hasStats ? _maxHorizontalSpeed : settings.maxHorizontalSpeed;
+            float maxVerticalSpeed = _hasStats ? _maxVerticalSpeed : settings.maxVerticalSpeed;
+
             Vector3 desiredVelocity =
-                forward * (input.z * settings.maxHorizontalSpeed) +
-                right * (input.x * settings.maxHorizontalSpeed) +
-                Vector3.up * (input.y * settings.maxVerticalSpeed);
+                forward * (input.z * maxHorizontalSpeed) +
+                right * (input.x * maxHorizontalSpeed) +
+                Vector3.up * (input.y * maxVerticalSpeed);
 
             float smoothTime = desiredVelocity.sqrMagnitude >= _velocity.sqrMagnitude
-                ? settings.accelerationTime
-                : settings.decelerationTime;
+                ? settings.accelerationTime / _accelerationScale
+                : settings.decelerationTime / _brakeScale;
             _velocity = Vector3.SmoothDamp(_velocity, desiredVelocity, ref _smoothDampVelocity, smoothTime);
 
             Vector3 position = transform.position + _velocity * dt;
@@ -74,8 +97,8 @@ namespace MechaGame
             if (_visualRoot != null)
             {
                 Vector3 localVelocity = transform.InverseTransformDirection(_velocity);
-                float bank = -localVelocity.x / settings.maxHorizontalSpeed * settings.maxBankAngle;
-                float tilt = localVelocity.z / settings.maxHorizontalSpeed * settings.maxPitchTilt;
+                float bank = -localVelocity.x / maxHorizontalSpeed * settings.maxBankAngle;
+                float tilt = localVelocity.z / maxHorizontalSpeed * settings.maxPitchTilt;
                 Quaternion targetTilt = Quaternion.Euler(tilt, 0f, bank);
                 float tiltBlend = 1f - Mathf.Exp(-6f * dt);
                 _visualRoot.localRotation = Quaternion.Slerp(_visualRoot.localRotation, targetTilt, tiltBlend);

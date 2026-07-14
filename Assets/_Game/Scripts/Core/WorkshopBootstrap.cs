@@ -1,4 +1,3 @@
-using UnityEditor.Media;
 using UnityEngine;
 
 namespace MechaGame
@@ -6,7 +5,7 @@ namespace MechaGame
     /// <summary>
     /// Baut die Werkstatt-Szene zur Laufzeit auf: Podest, Licht, feste Kamera,
     /// Mecha-Vorschau (aus der aktuellen Konfiguration) und Werkstatt-UI.
-    /// </summary> d
+    /// </summary>
     public class WorkshopBootstrap : MonoBehaviour
     {
         void Awake()

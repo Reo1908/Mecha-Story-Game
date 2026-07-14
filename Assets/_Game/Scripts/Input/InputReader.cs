@@ -27,6 +27,7 @@ namespace MechaGame
         public Vector2 LookDelta { get; private set; }
 
         public bool FireHeld { get; private set; }
+        public bool ShieldHeld { get; private set; }
         public bool MenuPressed { get; private set; }
         public bool WorkshopPressed { get; private set; }
 
@@ -59,6 +60,7 @@ namespace MechaGame
             Vector3 move = Vector3.zero;
             Vector2 look = Vector2.zero;
             bool fire = false;
+            bool shield = false;
             bool menu = false;
             bool workshop = false;
 
@@ -82,8 +84,10 @@ namespace MechaGame
                 Vector2 delta = mouse.delta.ReadValue();
                 look += delta * settings.mouseSensitivity;
                 if (mouse.leftButton.isPressed) fire = true;
+                if (mouse.rightButton.isPressed) shield = true;
 
-                if (delta.sqrMagnitude > 0.5f || mouse.leftButton.wasPressedThisFrame)
+                if (delta.sqrMagnitude > 0.5f || mouse.leftButton.wasPressedThisFrame ||
+                    mouse.rightButton.wasPressedThisFrame)
                     ActiveDevice = ActiveInputDevice.KeyboardMouse;
             }
 
@@ -103,6 +107,7 @@ namespace MechaGame
                 look.y += curved.y * settings.gamepadSensitivityY * Time.deltaTime;
 
                 if (pad.rightTrigger.ReadValue() > 0.4f) fire = true;
+                if (pad.leftTrigger.ReadValue() > 0.4f) shield = true;
                 if (pad.startButton.wasPressedThisFrame) menu = true;
                 if (pad.buttonNorth.wasPressedThisFrame) workshop = true;
 
@@ -110,6 +115,7 @@ namespace MechaGame
                     leftStick.sqrMagnitude > 0.001f ||
                     rightStick.sqrMagnitude > 0.001f ||
                     pad.rightTrigger.ReadValue() > 0.2f ||
+                    pad.leftTrigger.ReadValue() > 0.2f ||
                     pad.rightShoulder.isPressed ||
                     pad.leftShoulder.isPressed ||
                     pad.startButton.wasPressedThisFrame ||
@@ -129,6 +135,7 @@ namespace MechaGame
                 Move = Vector3.zero;
                 LookDelta = Vector2.zero;
                 FireHeld = false;
+                ShieldHeld = false;
                 WorkshopPressed = false;
             }
             else
@@ -136,6 +143,7 @@ namespace MechaGame
                 Move = move;
                 LookDelta = look;
                 FireHeld = fire;
+                ShieldHeld = shield;
                 WorkshopPressed = workshop;
             }
         }
