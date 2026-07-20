@@ -1,8 +1,7 @@
 <div align="center">
 
-# 🤖 Mecha Story Game
 
-*A story-driven sci-fi adventure built with Unity.*
+*A Game.*
 
 ![Unity](https://img.shields.io/badge/Unity-6-black?logo=unity)
 ![C#](https://img.shields.io/badge/C%23-.NET-239120?logo=csharp)
@@ -15,9 +14,8 @@
 
 # 🚀 About
 
-**Mecha Story Game** is a story-driven action game developed in **Unity**.
+game. no peeking
 
-Players explore a futuristic world, fight powerful enemies, and uncover the story behind mysterious mechas and advanced technology.
 
 > ⚠️ This project is currently under active development.
 
@@ -25,9 +23,6 @@ Players explore a futuristic world, fight powerful enemies, and uncover the stor
 
 # ✨ Features
 
-- 🤖 Story-driven gameplay
-- ⚔️ Mecha combat
-- 🌍 Exploration
 - 🎮 Unity 6
 - 🎵 Custom sound effects & music
 - 💾 Save system *(planned)*
