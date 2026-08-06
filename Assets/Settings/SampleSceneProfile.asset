@@ -21,7 +21,7 @@ MonoBehaviour:
     m_Value: 1
   intensity:
     m_OverrideState: 1
-    m_Value: 0.25
+    m_Value: 1.76
   scatter:
     m_OverrideState: 1
     m_Value: 0.5
@@ -34,6 +34,9 @@ MonoBehaviour:
   highQualityFiltering:
     m_OverrideState: 1
     m_Value: 1
+  filter:
+    m_OverrideState: 0
+    m_Value: 0
   downscale:
     m_OverrideState: 0
     m_Value: 0
@@ -46,6 +49,55 @@ MonoBehaviour:
     dimension: 1
   dirtIntensity:
     m_OverrideState: 0
+    m_Value: 0
+--- !u!114 &-6808342617403919845
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a195a728eb4f1a4eb43703777040245, type: 3}
+  m_Name: AnimeBloomVolume
+  m_EditorClassIdentifier: Assembly-CSharp::RetroFX.AnimeBloomVolume
+  active: 1
+  enabled:
+    m_OverrideState: 1
+    m_Value: 1
+  threshold:
+    m_OverrideState: 1
+    m_Value: 0
+  knee:
+    m_OverrideState: 1
+    m_Value: 0.5
+  clamp:
+    m_OverrideState: 1
+    m_Value: 12
+  downsample:
+    m_OverrideState: 1
+    m_Value: 4
+  iterations:
+    m_OverrideState: 1
+    m_Value: 3
+  blurSpread:
+    m_OverrideState: 1
+    m_Value: 1.5
+  stretch:
+    m_OverrideState: 1
+    m_Value: {x: 1, y: 1}
+  intensity:
+    m_OverrideState: 1
+    m_Value: 1.5
+  tint:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  saturation:
+    m_OverrideState: 1
+    m_Value: 1.1
+  diffusion:
+    m_OverrideState: 1
     m_Value: 0
 --- !u!114 &-3357603926938260329
 MonoBehaviour:
@@ -157,3 +209,52 @@ MonoBehaviour:
   clamp:
     m_OverrideState: 0
     m_Value: 0.05
+--- !u!114 &7791488284297193974
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db1338c130cf2f4429d472c19797f56c, type: 3}
+  m_Name: CameraStreakVolume
+  m_EditorClassIdentifier: Assembly-CSharp::RetroFX.CameraStreakVolume
+  active: 1
+  enabled:
+    m_OverrideState: 1
+    m_Value: 1
+  threshold:
+    m_OverrideState: 1
+    m_Value: 1.2
+  knee:
+    m_OverrideState: 1
+    m_Value: 0.3
+  clamp:
+    m_OverrideState: 1
+    m_Value: 15
+  angle:
+    m_OverrideState: 1
+    m_Value: 90
+  length:
+    m_OverrideState: 1
+    m_Value: 6
+  iterations:
+    m_OverrideState: 1
+    m_Value: 5
+  attenuation:
+    m_OverrideState: 1
+    m_Value: 0.85
+  downsample:
+    m_OverrideState: 1
+    m_Value: 2
+  intensity:
+    m_OverrideState: 1
+    m_Value: 1
+  tint:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 1, b: 1, a: 1}
+  chromaticFringe:
+    m_OverrideState: 1
+    m_Value: 0.4
