@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6226304511022589135
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5275529537921375430}
+  - component: {fileID: 8730764966879802380}
+  m_Layer: 0
+  m_Name: TestBullet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5275529537921375430
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6226304511022589135}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.9316802, y: 1.38407, z: -1.4070301}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8730764966879802380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6226304511022589135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a18411ad4b32e439823a9a80a6feeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MechCombat.Projectile
+  bulletData:
+    hitMask:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    bulletModel: {fileID: 0}
+    impactEffect: {fileID: 0}
+    explosionEffect: {fileID: 0}
+    missileTrail: {fileID: 0}
+    ricochetEffect: {fileID: 0}
+    terrainRicochetEffect: {fileID: 0}
+  movement:
+    bulletType: 0
+    velocity: 200
+    maxVelocity: 300
+    lifetime: 10
+    drag: 0.01
+    hitboxSize: {x: 1, y: 1, z: 1}
+    hitBehavior: 0
+  laser:
+    maxRange: 500
+    laserThermalDamage: 10
+    laserInducedHeat: 10
+    beamPrefab: {fileID: 0}
+    impactEffect: {fileID: 0}
+  damage:
+    kineticDamage: 10
+    armorPenetration: 5
+    thermalDamage: 0
+    inducedHeat: 0
+    impactForce: 0
+    gravityMultiplier: 1
+  debugTracking: 1
