@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 188541313}
   - component: {fileID: 188541312}
   - component: {fileID: 188541311}
+  - component: {fileID: 188541314}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -204,13 +205,57 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 188541310}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &188541314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 188541310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &862969794
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,6 +265,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 862969795}
+  - component: {fileID: 862969796}
+  - component: {fileID: 862969797}
   m_Layer: 0
   m_Name: TestPlayerCore
   m_TagString: Untagged
@@ -236,12 +283,76 @@ Transform:
   m_GameObject: {fileID: 862969794}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.23568, y: -1.97419, z: 4.16654}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &862969796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862969794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0590c67355a79484abc8c5d05dad21af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MechCombat.FCS.MechChassis
+  head: {attachPoint: {fileID: 0}, equippedPrefab: {fileID: 0}, instance: {fileID: 0}}
+  core: {attachPoint: {fileID: 0}, equippedPrefab: {fileID: 0}, instance: {fileID: 0}}
+  generator: {attachPoint: {fileID: 0}, equippedPrefab: {fileID: 0}, instance: {fileID: 0}}
+  fcsStats: {fileID: 11400000, guid: 353b292ca1e99574ebdf5e42d5644272, type: 2}
+  boosters: {attachPoint: {fileID: 0}, equippedPrefab: {fileID: 0}, instance: {fileID: 0}}
+  leftArm: {attachPoint: {fileID: 0}, basePrefab: {fileID: 0}, rotatingModelPrefab: {fileID: 0}, rotatingModelOffset: {x: 0, y: 0, z: 0}, equippedWeapon: {fileID: 0}, restLocalRotation: {x: 0, y: 0, z: 0, w: 1}, yawLimitDegrees: 80, pitchUpLimitDegrees: 50, pitchDownLimitDegrees: 60, maxRotationSpeedDegPerSec: 240, _baseInstance: {fileID: 0}, _rotatingInstance: {fileID: 0}, _currentYaw: 0, _currentPitch: 0}
+  rightArm: {attachPoint: {fileID: 0}, basePrefab: {fileID: 0}, rotatingModelPrefab: {fileID: 0}, rotatingModelOffset: {x: 0, y: 0, z: 0}, equippedWeapon: {fileID: 0}, restLocalRotation: {x: 0, y: 0, z: 0, w: 1}, yawLimitDegrees: 80, pitchUpLimitDegrees: 50, pitchDownLimitDegrees: 60, maxRotationSpeedDegPerSec: 240, _baseInstance: {fileID: 0}, _rotatingInstance: {fileID: 0}, _currentYaw: 0, _currentPitch: 0}
+  legs: {attachPoint: {fileID: 0}, equippedPrefab: {fileID: 0}, instance: {fileID: 0}}
+  leftBackMount: {attachPoint: {fileID: 0}, basePrefab: {fileID: 0}, rotatingModelPrefab: {fileID: 0}, rotatingModelOffset: {x: 0, y: 0, z: 0}, equippedWeapon: {fileID: 0}, restLocalRotation: {x: 0, y: 0, z: 0, w: 1}, yawLimitDegrees: 80, pitchUpLimitDegrees: 50, pitchDownLimitDegrees: 60, maxRotationSpeedDegPerSec: 240, _baseInstance: {fileID: 0}, _rotatingInstance: {fileID: 0}, _currentYaw: 0, _currentPitch: 0}
+  rightBackMount: {attachPoint: {fileID: 0}, basePrefab: {fileID: 0}, rotatingModelPrefab: {fileID: 0}, rotatingModelOffset: {x: 0, y: 0, z: 0}, equippedWeapon: {fileID: 0}, restLocalRotation: {x: 0, y: 0, z: 0, w: 1}, yawLimitDegrees: 80, pitchUpLimitDegrees: 50, pitchDownLimitDegrees: 60, maxRotationSpeedDegPerSec: 240, _baseInstance: {fileID: 0}, _rotatingInstance: {fileID: 0}, _currentYaw: 0, _currentPitch: 0}
+  leftShoulderExtension: {attachPoint: {fileID: 0}, equippedPrefab: {fileID: 0}, instance: {fileID: 0}}
+  rightShoulderExtension: {attachPoint: {fileID: 0}, equippedPrefab: {fileID: 0}, instance: {fileID: 0}}
+  _camera: {fileID: 188541312}
+  _sensorOrigin: {fileID: 862969795}
+  _shooterRigidbody: {fileID: 862969797}
+  _audioSource: {fileID: 0}
+  _reticleScreenPos: {x: 0, y: 0}
+  _reticleDeltaThisFrame: {x: 0, y: 0}
+  _lockboxScreenPos: {x: 0, y: 0}
+  _state: 0
+  _candidateTarget: {fileID: 0}
+  _lockedTarget: {fileID: 0}
+  _lockProgress: 0
+  <HorizontalTurnCommand>k__BackingField: 0
+  <VerticalLookAngle>k__BackingField: 0
+--- !u!54 &862969797
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 862969794}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1175003113
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,7 +460,7 @@ Transform:
   m_GameObject: {fileID: 1175003113}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -1.27, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -486,7 +597,7 @@ MonoBehaviour:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 188541313}
   - {fileID: 1180492970}
   - {fileID: 1175003117}
   - {fileID: 862969795}
+  - {fileID: 188541313}

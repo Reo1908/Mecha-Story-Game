@@ -56,9 +56,6 @@ MonoBehaviour:
     delay: 0
     duration: 2
     useUnscaledTime: 0
-    onSpawned:
-      m_PersistentCalls:
-        m_Calls: []
   - prefab: {fileID: 7706225195431547789, guid: df30400fefa8cd84f908a467da0ab785, type: 3}
     label: 
     parentToObject: 0
@@ -70,11 +67,7 @@ MonoBehaviour:
     delay: 0
     duration: 1
     useUnscaledTime: 0
-    onSpawned:
-      m_PersistentCalls:
-        m_Calls: []
   playOnStart: 1
   timeScaleMultiplier: 1
-  onAllSpawned:
-    m_PersistentCalls:
-      m_Calls: []
+  destroySelfWhenAllEffectsFinished: 1
+  extraDelayBeforeSelfDestroy: 0
