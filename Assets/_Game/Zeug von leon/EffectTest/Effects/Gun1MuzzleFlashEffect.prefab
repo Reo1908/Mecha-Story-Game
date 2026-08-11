@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5848038572767340323
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6903420692046494226}
+  - component: {fileID: 3961468083061990072}
+  m_Layer: 0
+  m_Name: Gun1MuzzleFlashEffect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6903420692046494226
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5848038572767340323}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3961468083061990072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5848038572767340323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b49119ba0b5df844cbd9abe43fd94152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EffectSpawner
+  effects:
+  - prefab: {fileID: 717027434718152009, guid: ec9289330e834124c93193fa92c36fa6, type: 3}
+    label: Test
+    parentToObject: 1
+    inheritScale: 1
+    matchPosition: 1
+    matchRotation: 1
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    delay: 0
+    duration: 0.1
+    useUnscaledTime: 0
+    onSpawned:
+      m_PersistentCalls:
+        m_Calls: []
+  - prefab: {fileID: 7471778001950291375, guid: 3b80116ffb77ab04199a86e4aa1b2819, type: 3}
+    label: Test
+    parentToObject: 1
+    inheritScale: 1
+    matchPosition: 1
+    matchRotation: 1
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    delay: 0
+    duration: 5
+    useUnscaledTime: 0
+    onSpawned:
+      m_PersistentCalls:
+        m_Calls: []
+  playOnStart: 1
+  timeScaleMultiplier: 1
+  onAllSpawned:
+    m_PersistentCalls:
+      m_Calls: []

@@ -83,6 +83,8 @@ namespace MechCombat
             public float impactForce = 0f;
             [Tooltip("Multiplies real-world gravity (9.81 m/s^2) for this projectile. 0 = no drop.")]
             public float gravityMultiplier = 1f;
+            [Tooltip("Grazing angle (degrees, measured from the surface) below which this bullet ALWAYS ricochets, regardless of armor/RNG. 45 = the original default; lower means it needs a shallower, more glancing hit to force a bounce; higher means it bounces more easily off steeper hits too.")]
+            public float ricochetAngleThreshold = 45f;
         }
 
         [Header("Bullet Data")]
@@ -491,16 +493,17 @@ namespace MechCombat
         }
 
         /// <summary>
-        /// A "shallow" hit — below 45° measured from the surface, i.e. a grazing hit — always
-        /// ricochets. Measured from the projectile's direction of travel against the hit
-        /// normal (not any rotation/geometry on the bullet's own collider), since that's the
-        /// simplest vector pair that's always available regardless of hit shape.
+        /// A "shallow" hit — below Damage.RicochetAngleThreshold degrees measured from the
+        /// surface, i.e. a grazing hit — always ricochets. Measured from the projectile's
+        /// direction of travel against the hit normal (not any rotation/geometry on the
+        /// bullet's own collider), since that's the simplest vector pair that's always
+        /// available regardless of hit shape.
         /// </summary>
         bool IsShallowAngle(Vector3 travelDir, Vector3 normal)
         {
             float angleFromNormal = Vector3.Angle(travelDir, -normal);
             float grazingAngleFromSurface = 90f - angleFromNormal;
-            return grazingAngleFromSurface < 45f;
+            return grazingAngleFromSurface < damage.ricochetAngleThreshold;
         }
 
         /// <summary>

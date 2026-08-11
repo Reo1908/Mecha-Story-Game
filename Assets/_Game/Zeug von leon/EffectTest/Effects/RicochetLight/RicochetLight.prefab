@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6804312118949051513
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6115379540536083219}
+  - component: {fileID: 3218743461224530887}
+  m_Layer: 0
+  m_Name: RicochetLight
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6115379540536083219
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6804312118949051513}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.74809, y: -0.13983, z: 8.34125}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3218743461224530887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6804312118949051513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b49119ba0b5df844cbd9abe43fd94152, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EffectSpawner
+  effects:
+  - prefab: {fileID: 7980807960890701178, guid: b65334435c5b8e040be4fb03434cb0fd, type: 3}
+    label: 
+    parentToObject: 0
+    inheritScale: 0
+    matchPosition: 1
+    matchRotation: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    delay: 0
+    duration: 2
+    useUnscaledTime: 0
+  - prefab: {fileID: 7706225195431547789, guid: df30400fefa8cd84f908a467da0ab785, type: 3}
+    label: 
+    parentToObject: 0
+    inheritScale: 0
+    matchPosition: 1
+    matchRotation: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    delay: 0
+    duration: 1
+    useUnscaledTime: 0
+  playOnStart: 1
+  timeScaleMultiplier: 1
+  destroySelfWhenAllEffectsFinished: 1
+  extraDelayBeforeSelfDestroy: 0
