@@ -106,6 +106,17 @@ namespace MechCombat
         /// <summary>Who fired this. Null-checked everywhere it's used, so an un-owned bullet is fine.</summary>
         public GameObject Owner { get; private set; }
 
+        /// <summary>
+        /// The firing platform's own velocity at the moment of the shot — set by
+        /// WeaponController right after Instantiate, same timing as Owner/the damage
+        /// multipliers. Added on top of this bullet's own muzzle velocity in Start(), so a
+        /// mech strafing sideways while firing carries that motion into the shot instead of
+        /// the bullet "forgetting" the platform's momentum the instant it spawns. Left at
+        /// Vector3.zero (its default) for anything that doesn't set it — a stationary or
+        /// unowned emitter, which is exactly the old behavior.
+        /// </summary>
+        [HideInInspector] public Vector3 InheritedVelocity;
+
         Vector3 velocityVector;
         float lifeTimer;
         float laserDamageAccumulator;
@@ -117,6 +128,7 @@ namespace MechCombat
         GameObject spawnedLaserImpact;
         bool hasRicocheted;
         float originalKineticDamage;
+        float originalMaxVelocity;
 
         // Optional companion components — a given prefab may not have either of these.
         MissileTracking tracking;
@@ -129,6 +141,14 @@ namespace MechCombat
         {
             tracking = GetComponent<MissileTracking>();
             explosive = GetComponent<ExplosivePayload>();
+
+            // Captured here (NOT Start) specifically because Awake fires synchronously inside
+            // Instantiate(), before a WeaponController gets a chance to scale movement.maxVelocity
+            // on the returned reference. This is the opposite timing from originalKineticDamage
+            // below — this one needs the PRE-multiplier baseline as a fixed reference point, so
+            // a weapon-boosted bullet's speed ratio (see CurrentSpeedMultiplier) can read as
+            // genuinely above 100% instead of just being re-normalized back down to ~100%.
+            originalMaxVelocity = movement.maxVelocity;
         }
 
         void Start()
@@ -139,7 +159,15 @@ namespace MechCombat
             // returned reference; Start() runs later and picks up the final value.
             originalKineticDamage = damage.kineticDamage;
 
-            velocityVector = transform.forward * movement.velocity;
+            velocityVector = transform.forward * movement.velocity + InheritedVelocity;
+
+            // MaxVelocity needs room to accommodate the inherited component on top of the
+            // bullet's own muzzle speed, or UpdateBallistic's speed-cap clamp would erase it
+            // again on the very next frame. originalMaxVelocity (captured in Awake, above) is
+            // deliberately left untouched — it's the fixed damage-ratio baseline, and a shot
+            // fired from a moving platform legitimately reading above 100% is the same design
+            // as WeaponController's VelocityMultiplier already producing that outcome.
+            movement.maxVelocity += InheritedVelocity.magnitude;
 
             SpawnVisuals();
 
@@ -212,11 +240,31 @@ namespace MechCombat
             Owner = owner;
         }
 
-        void Update()
+        /// <summary>
+        /// All of this projectile's simulation (movement, collision, laser ticking, tracking,
+        /// proximity fuze) runs on FixedUpdate rather than Update. Two reasons, both from the
+        /// same underlying fact: Time.fixedDeltaTime is always a small, constant value — after
+        /// a lag spike or a GC hitch, Unity just calls FixedUpdate several times in a row to
+        /// catch back up, instead of ever handing this a single huge dt the way Update would.
+        /// 1) Correctness under lag: nothing here has to defend against an enormous one-frame
+        ///    dt (which is exactly what caused the earlier drag bug at high speed).
+        /// 2) Multiplayer readiness: a fixed, well-defined simulation tick is the standard
+        ///    foundation lockstep/rollback-style P2P netcode is built on — this is already
+        ///    separated from input/rendering (Update, in WeaponController) and already takes an
+        ///    explicit dt in most of its own sub-methods (TickLaunch, TickTracking,
+        ///    TickProximityFuze), so swapping Unity's own fixed-tick loop for a synchronized
+        ///    network tick later shouldn't need to touch the logic itself.
+        /// Trade-off worth knowing: the laser beam's visual stretch/impact-effect position also
+        /// updates on this same fixed tick now rather than every rendered frame, which could
+        /// read as very slightly less smooth at low physics tick rates. Say so if that turns
+        /// out to matter and I'll split the visual-only parts back out to Update with
+        /// interpolation.
+        /// </summary>
+        void FixedUpdate()
         {
             if (movement.lifetime > 0f)
             {
-                lifeTimer += Time.deltaTime;
+                lifeTimer += Time.fixedDeltaTime;
                 if (lifeTimer >= movement.lifetime)
                 {
                     Detonate(transform.position, transform.forward);
@@ -227,18 +275,18 @@ namespace MechCombat
             switch (movement.bulletType)
             {
                 case BulletType.Laser:
-                    UpdateLaser();
+                    UpdateLaser(Time.fixedDeltaTime);
                     break;
 
                 case BulletType.Bullet:
                 case BulletType.Missile:
-                    UpdateBallistic(Time.deltaTime);
+                    UpdateBallistic(Time.fixedDeltaTime);
                     break;
             }
 
             if (tracking != null && movement.bulletType == BulletType.Missile && !launchPhaseActive && !hasLanded)
             {
-                tracking.TickTracking(Time.deltaTime, transform, ref velocityVector, movement.maxVelocity);
+                tracking.TickTracking(Time.fixedDeltaTime, transform, ref velocityVector, movement.maxVelocity);
             }
 
             if (explosive != null && !launchPhaseActive)
@@ -263,7 +311,7 @@ namespace MechCombat
                 if (!finished) return;
 
                 launchPhaseActive = false;
-                velocityVector = transform.forward * movement.velocity;
+                velocityVector = transform.forward * movement.velocity + InheritedVelocity;
                 SpawnMissileTrail();
                 return;
             }
@@ -272,12 +320,20 @@ namespace MechCombat
             velocityVector += Vector3.down * (GRAVITY * damage.gravityMultiplier * dt);
 
             // Drag: deceleration proportional to speed squared, opposing current direction.
+            // This uses the closed-form solution to dv/dt = -drag*v^2 (v(t+dt) = v / (1 + drag*v*dt))
+            // rather than a single explicit step (old: velocity -= drag*v^2*dt). The explicit
+            // version is only a good approximation when drag*v*dt is small — once v got large
+            // enough (a fast-launched bullet, or a few frames of gravity build-up), that single
+            // step could exceed the bullet's entire current speed, and the overshoot guard would
+            // just zero it out instantly rather than reverse it. From then on only gravity acted
+            // on a zero-velocity bullet, which looked exactly like it dripping straight down at
+            // the muzzle instead of flying. The closed-form version asymptotically approaches
+            // zero and can never overshoot past it, for any speed or frame time.
             if (movement.drag > 0f && velocityVector.sqrMagnitude > 0.0001f)
             {
-                Vector3 dragDecel = -velocityVector.normalized * (movement.drag * velocityVector.sqrMagnitude * dt);
-                velocityVector = dragDecel.sqrMagnitude > velocityVector.sqrMagnitude
-                    ? Vector3.zero
-                    : velocityVector + dragDecel;
+                float speed = velocityVector.magnitude;
+                float newSpeed = speed / (1f + movement.drag * speed * dt);
+                velocityVector = velocityVector.normalized * newSpeed;
             }
 
             if (velocityVector.magnitude > movement.maxVelocity)
@@ -296,8 +352,16 @@ namespace MechCombat
 
             float sweepRadius = Mathf.Max(0.01f, Mathf.Max(movement.hitboxSize.x, Mathf.Max(movement.hitboxSize.y, movement.hitboxSize.z)) * 0.5f);
 
+            // IsOwner is checked here too, not just inside HandleHit — grazing the mech's own
+            // barrel/chassis geometry near the muzzle (much more likely at high velocity, since
+            // each frame's sweep distance is proportionally longer) would otherwise still count
+            // as "a hit happened" and skip the position update below for that frame, even though
+            // HandleHit itself does nothing with an owner-hit. That froze position while rotation
+            // kept updating to track gravity, which looked like the bullet drooping/dripping out
+            // of the muzzle instead of flying.
             if (delta.sqrMagnitude > 0.0000001f &&
-                Physics.SphereCast(previousPos, sweepRadius, delta.normalized, out RaycastHit hit, delta.magnitude, bulletData.hitMask))
+                Physics.SphereCast(previousPos, sweepRadius, delta.normalized, out RaycastHit hit, delta.magnitude, bulletData.hitMask) &&
+                !IsOwner(hit.collider))
             {
                 HandleHit(hit.collider, hit.point, hit.normal);
                 return;
@@ -306,7 +370,7 @@ namespace MechCombat
             transform.position = nextPos;
         }
 
-        void UpdateLaser()
+        void UpdateLaser(float dt)
         {
             Vector3 origin = transform.position;
             Vector3 dir = transform.forward;
@@ -319,8 +383,15 @@ namespace MechCombat
 
             if (!didHit) return;
 
-            laserDamageAccumulator += Time.deltaTime;
+            laserDamageAccumulator += dt;
             if (laserDamageAccumulator < LASER_TICK_RATE) return;
+
+            // Use the ACTUAL accumulated time for this tick's damage, not the fixed rate
+            // constant. Under a lag spike, several tick-intervals' worth of real time can pass
+            // before this check runs — using the fixed constant would silently throw away
+            // everything beyond one tick's worth; using the real elapsed value keeps total
+            // damage-over-time correct regardless of how choppy the actual ticks land.
+            float elapsedForTick = laserDamageAccumulator;
             laserDamageAccumulator = 0f;
 
             if (IsOwner(hit.collider)) return;
@@ -329,8 +400,8 @@ namespace MechCombat
             if (target == null) return;
 
             float distance01 = Mathf.Clamp01(hit.distance / Mathf.Max(laser.maxRange, 0.0001f));
-            float thermalThisTick = Mathf.Lerp(laser.laserThermalDamage, 0f, distance01) * LASER_TICK_RATE;
-            float inducedHeatThisTick = Mathf.Lerp(laser.laserInducedHeat, 0f, distance01) * LASER_TICK_RATE;
+            float thermalThisTick = Mathf.Lerp(laser.laserThermalDamage, 0f, distance01) * elapsedForTick;
+            float inducedHeatThisTick = Mathf.Lerp(laser.laserInducedHeat, 0f, distance01) * elapsedForTick;
 
             target.TakeDamage(new DamageInfo
             {
@@ -557,13 +628,19 @@ namespace MechCombat
             ResolveStop(point, normal);
         }
 
-        /// <summary>0-1: how close this projectile currently is to its own MaxVelocity.
-        /// Used to scale KineticDamage and ArmorPenetration down for a bullet that's slowed
-        /// by drag/gravity — 100% at top speed, 0% at a standstill.</summary>
+        /// <summary>
+        /// How close this projectile currently is to its ORIGINAL (pre-WeaponController-
+        /// multiplier) MaxVelocity — 100% at that baseline speed, 0% at a standstill. No upper
+        /// clamp: if a weapon's VelocityMultiplier scaled this bullet above its own baseline
+        /// (and therefore also raised its actual movement.maxVelocity cap by the same factor —
+        /// see WeaponController.FireFromPosition), this can genuinely read above 100%, capped
+        /// only by the multiplier itself, since the physical speed cap can never exceed
+        /// originalMaxVelocity * multiplier. Used to scale KineticDamage and ArmorPenetration.
+        /// </summary>
         float CurrentSpeedMultiplier()
         {
-            if (movement.bulletType == BulletType.Laser || movement.maxVelocity <= 0f) return 1f;
-            return Mathf.Clamp01(velocityVector.magnitude / movement.maxVelocity);
+            if (movement.bulletType == BulletType.Laser || originalMaxVelocity <= 0f) return 1f;
+            return Mathf.Max(0f, velocityVector.magnitude / originalMaxVelocity);
         }
 
         DamageInfo BuildDamageInfo(Vector3 point, Vector3 normal, Collider col)

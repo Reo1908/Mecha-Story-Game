@@ -172,6 +172,10 @@ namespace MechCombat
         [Header("Barrel Assembly")]
         public BarrelGroup barrel = new BarrelGroup();
 
+        [Header("Velocity Tracking")]
+        [Tooltip("Optional — assign the mech's own Rigidbody here for an accurate, instant velocity reading passed into fired bullets (InheritedVelocity). If left empty, this searches Owner and its children for one automatically the first time it's needed; if none exists at all, falls back to estimating velocity from this weapon's own position change each tick instead.")]
+        public Rigidbody ownerRigidbody;
+
         [Header("Debug")]
         [Tooltip("Held down, this fires the weapon directly for testing — bypasses any player input script entirely. Set to None to disable debug firing.")]
         public DebugFireButton debugFireButton = DebugFireButton.LeftClick;
@@ -195,6 +199,9 @@ namespace MechCombat
         float heatVelocity;
         float overheatTimer;
         float nextAllowedFireTime;
+        Vector3 previousPosition;
+        Vector3 measuredVelocity;
+        bool ownerRigidbodySearched;
         bool warnedMissingProjectile;
 
         GameObject spawnedWeaponModel;
@@ -224,6 +231,7 @@ namespace MechCombat
             Owner = transform.root.gameObject;
             CurrentMagazineAmmo = mechanics.magazineSize;
             MagazinesRemaining = Mathf.Max(0, mechanics.magazineCount - 1); // one magazine starts loaded
+            previousPosition = transform.position; // avoid a bogus velocity spike on the first FixedUpdate
         }
 
         void Start()
@@ -275,13 +283,71 @@ namespace MechCombat
         public void SetOwner(GameObject newOwner)
         {
             Owner = newOwner;
+            ownerRigidbodySearched = false; // re-search under the new owner next tick, if none was manually assigned
         }
 
+        /// <summary>
+        /// Heat determines whether the weapon can fire (IsOverheated), so — same reasoning as
+        /// Projectile — it runs on FixedUpdate's small, constant dt rather than Update's
+        /// potentially-huge-after-a-hitch one, and lands on the same fixed tick as Targetable's
+        /// own heat system for consistency.
+        /// </summary>
+        void FixedUpdate()
+        {
+            if (!Application.isPlaying) return;
+
+            UpdateHeat(Time.fixedDeltaTime);
+            UpdateMeasuredVelocity(Time.fixedDeltaTime);
+        }
+
+        /// <summary>
+        /// Prefers ownerRigidbody.linearVelocity — instant and accurate, no differentiation
+        /// lag or jitter. If ownerRigidbody isn't manually assigned, this searches Owner and
+        /// its children for one ONCE (cached via ownerRigidbodySearched) rather than every
+        /// tick. Only falls back to numerically differentiating this weapon's own position
+        /// (see the position-delta comment further down) when no Rigidbody exists at all —
+        /// that fallback still captures local weapon motion (turret traversal, recoil) that a
+        /// root Rigidbody's velocity alone wouldn't, just with a tick of lag and more jitter.
+        /// </summary>
+        void UpdateMeasuredVelocity(float dt)
+        {
+            if (ownerRigidbody == null && !ownerRigidbodySearched)
+            {
+                ownerRigidbodySearched = true;
+                if (Owner != null)
+                {
+                    ownerRigidbody = Owner.GetComponent<Rigidbody>();
+                    if (ownerRigidbody == null)
+                    {
+                        ownerRigidbody = Owner.GetComponentInChildren<Rigidbody>();
+                    }
+                }
+            }
+
+            if (ownerRigidbody != null)
+            {
+                measuredVelocity = ownerRigidbody.linearVelocity;
+                previousPosition = transform.position; // stays in sync in case ownerRigidbody gets cleared later
+                return;
+            }
+
+            if (dt > 0f)
+            {
+                measuredVelocity = (transform.position - previousPosition) / dt;
+            }
+            previousPosition = transform.position;
+        }
+
+        /// <summary>
+        /// Barrel spin/recoil animation and debug input polling stay on Update on purpose —
+        /// neither affects hit detection, damage, or ammo/heat state (purely cosmetic motion
+        /// and sound, or input sampling), so they're better off running at render-frame rate
+        /// for smoothness rather than being tied to the fixed tick.
+        /// </summary>
         void Update()
         {
             if (!Application.isPlaying) return;
 
-            UpdateHeat(Time.deltaTime);
             UpdateBarrelAnimation(Time.deltaTime);
 
             if (debugFireButton != DebugFireButton.None && Mouse.current != null)
@@ -432,7 +498,18 @@ namespace MechCombat
                     // Applied BEFORE Projectile's own Start() runs, so its "original kinetic
                     // damage" (used by the ricochet quarter-damage rule) reflects this weapon's
                     // multiplier rather than the prefab's raw default.
+                    //
+                    // MaxVelocity is scaled right alongside Velocity, not just Velocity alone —
+                    // Projectile's own damage falloff is a ratio of currentSpeed/MaxVelocity, so
+                    // scaling only the starting speed would launch the bullet faster than its own
+                    // cap, get instantly clamped back down to the UNSCALED MaxVelocity, and land
+                    // at exactly a 100% ratio no matter the multiplier — silently doing nothing
+                    // for any value above 1x. Scaling both keeps the ratio meaningful: the bullet
+                    // actually reaches its new (scaled) top speed, and still degrades via drag
+                    // over its flight exactly like an unmodified bullet would.
                     proj.movement.velocity *= multiplier.velocityMultiplier;
+                    proj.movement.maxVelocity *= multiplier.velocityMultiplier;
+                    proj.InheritedVelocity = measuredVelocity;
                     proj.Initialize(Owner);
                 }
                 else
